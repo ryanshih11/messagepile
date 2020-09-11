@@ -14,5 +14,4 @@ class Runner():
 
     def python(self):
         p = subprocess.Popen(['/usr/bin/python', self.code_file], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
-        out, err = p.communicate()
-        return out
+        return p.communicate()
