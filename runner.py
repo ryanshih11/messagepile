@@ -3,50 +3,54 @@ import threading
 import subprocess
 
 class Runner():
-    def run_code(self, language, code):
+    def run_code(self, language, code, args=[]):
         self.code_file = '/tmp/code'
 
         with open(self.code_file, 'w') as f:
             f.write(code)
         
-        result = getattr(self, language)()
+        result = getattr(self, language)(args)
         os.remove(self.code_file)
         return result
 
-    def generic_interpreter(self, path):
-        p = subprocess.Popen([path, self.code_file], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+    def generic_interpreter(self, path, args):
+        command = [path, self.code_file]
+        command.extend(args)
+        p = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
         return p.communicate()
     
-    def python(self):
-        return self.generic_interpreter('/usr/bin/python')
+    def python(self, args):
+        return self.generic_interpreter('/usr/bin/python', args)
     
     def java_cleanup_thread(self):
         os.system('sleep 5; rm /tmp/Main.java /tmp/Main.class')
         return "Look at you poking around", "Hmmmm"
 
-    def java(self):
+    def java(self, args):
         os.system('cp /tmp/code /tmp/Main.java; javac /tmp/Main.java')
         env = os.environ.copy()
         env['CLASSPATH'] = '/tmp'
-        p = subprocess.Popen(['/usr/bin/java', 'Main'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True, env=env)
+        command = ['/usr/bin/java', 'Main']
+        command.extend(args)
+        p = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True, env=env)
         threading.Thread(target=self.java_cleanup_thread).start()
         return p.communicate()
 
-    def brainfuck(self):
-        return self.generic_interpreter('/usr/bin/brainfuck')
+    def brainfuck(self, args):
+        return self.generic_interpreter('/usr/bin/brainfuck', args)
     
-    def php(self):
-        return self.generic_interpreter('/usr/bin/php')
+    def php(self, args):
+        return self.generic_interpreter('/usr/bin/php', args)
 
     def go_cleanup_thread(self):
         os.system('sleep 5; rm -rf /tmp/src')
         return "Look at you poking around", "Hmmmm"
 
-    def go(self):
-        os.system('mkdir /tmp/src; mkdir /tmp/src/code; cp /tmp/code /tmp/src/code/code.go')
-        env = os.environ.copy()
-        env['GOPATH'] = '/tmp'
-        p = subprocess.Popen(['/usr/bin/go', 'run', 'code'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True, env=env)
+    def go(self, args):
+        os.system('mkdir /tmp/src; mkdir /tmp/src/code; cp /tmp/code /tmp/src/code/code.go; export GOPATH=/tmp; cd /tmp; go build -o /tmp/src/code/code')
+        command = ['/tmp/src/code/code']
+        command.extend(args)
+        p = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
         threading.Thread(target=self.go_cleanup_thread).start()
         return p.communicate()
     
@@ -54,9 +58,11 @@ class Runner():
         os.system('sleep 5; rm /tmp/a.out')
         return "Look at you poking around", "Hmmmm"
 
-    def rust(self):
+    def rust(self, args):
         compile_proc = subprocess.Popen(['/usr/bin/rustc', self.code_file, '-o', '/tmp/a.out'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
         os.system('sleep 5')
-        p = subprocess.Popen(['/tmp/a.out'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+        command = ['/tmp/a.out']
+        command.extend(args)
+        p = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
         threading.Thread(target=self.rust_cleanup_thread).start()
         return p.communicate()

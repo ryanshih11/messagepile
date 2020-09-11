@@ -27,11 +27,12 @@ async def on_message(message):
     print("Message from {0.author}: {0.content}".format(message))
 
     if message.content.startswith('!code'):
-        language = message.content.split()[1]
+        split = message.content.split()
+        language = split[1]
         await message.channel.send('Running your {0} code. One moment.'.format(language))
         code = last_message[last_message.find('\n') + 1:last_message.rfind('\n')]
-        out, err = runner.run_code(language, code)
-        await message.channel.send('stdout\n```\n' + (out if len(out) > 0 else 'error') + '\n```\nstderr\n```\n' + err + '\n```\nDone.')
+        out, err = runner.run_code(language, code, args=split[2:])
+        await message.channel.send('stdout:\n```\n' + (out if len(out) > 0 else 'error') + '\n``` '+ (('\nstderr:\n```\n' + err + '\n```') if len(err) > 0 else '') + '\nDone.')
         
     last_message = message.content
 
