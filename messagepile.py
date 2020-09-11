@@ -7,6 +7,7 @@ runner = Runner()
 channels = []
 token = ''
 config_path = '/home/meet/Documents/Programming/python/messagepile/config.xml'
+last_message = ''
 
 @client.event
 async def on_ready():
@@ -18,13 +19,21 @@ async def on_ready():
 
 @client.event
 async def on_message(message):
+    global last_message
+
     if message.author == client.user:
         return
 
     print("Message from {0.author}: {0.content}".format(message))
 
     if message.content.startswith('!code'):
-        await message.channel.send('Received code command.')
+        language = message.content.split()[1]
+        await message.channel.send('Running your {0} code. One moment.'.format(language))
+        code = last_message[last_message.find('\n') + 1:last_message.rfind('\n')]
+        result = runner.run_code(language, code)
+        await message.channel.send('Result:\n' + result)
+        
+    last_message = message.content
 
 if __name__ == '__main__':
     with open(config_path, 'r') as conf_xml:
@@ -32,4 +41,3 @@ if __name__ == '__main__':
         root = objectify.fromstring(data)
         token = root.token.text
     client.run(token)
-    #runner.run_code('python', 'print("test")')
