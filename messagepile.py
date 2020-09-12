@@ -32,7 +32,7 @@ async def on_message(message):
         await message.channel.send('Running your {0} code. One moment.'.format(language))
         code = last_message[last_message.find('\n') + 1:last_message.rfind('\n')]
         out, err = runner.run_code(language, code, args=split[2:])
-        await message.channel.send('stdout:\n```\n' + (out if len(out) > 0 else 'error') + '\n``` '+ (('\nstderr:\n```\n' + err + '\n```') if len(err) > 0 else '') + '\nDone.')
+        await message.channel.send('stdout:\n```\n' + (out if len(out) > 0 else 'error') + '\n``` '+ (('\nstderr:\n```bash\n' + err + '\n```') if len(err) > 0 else '') + '\nDone.')
         
     last_message = message.content
 

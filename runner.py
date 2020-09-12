@@ -43,15 +43,15 @@ class Runner():
         return self.generic_interpreter('/usr/bin/php', args)
 
     def go_cleanup_thread(self):
-        os.system('sleep 5; rm -rf /tmp/src')
+        os.system('sleep 5; rm /tmp/code.go /tmp/codego')
         return "Look at you poking around", "Hmmmm"
 
     def go(self, args):
-        os.system('mkdir /tmp/src; mkdir /tmp/src/code; cp /tmp/code /tmp/src/code/code.go; export GOPATH=/tmp; cd /tmp; go build -o /tmp/src/code/code')
-        command = ['/tmp/src/code/code']
+        os.system('cp /tmp/code /tmp/code.go; export GOPATH=/tmp; cd /tmp; go build -o /tmp/codego')
+        command = ['/tmp/codego']
         command.extend(args)
         p = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
-        threading.Thread(target=self.go_cleanup_thread).start()
+        #threading.Thread(target=self.go_cleanup_thread).start()
         return p.communicate()
     
     def rust_cleanup_thread(self):
