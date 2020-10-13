@@ -9,6 +9,10 @@ token = ''
 config_path = '/home/meet/Documents/Programming/python/messagepile/config.xml'
 last_message = ''
 
+#Project Team 11: Connor Perkins, Ryan Shih, Daniel Sinani, Samuel Harward
+#Languages included so far: Java, Python, C#, ... Feel free to edit
+#Features: Reading code, compiling, running code
+
 @client.event
 async def on_ready():
     print("Logged on as {0}!".format(client.user))
@@ -16,7 +20,7 @@ async def on_ready():
         print(server)
         for channel in server.channels:
             channels.append(channel)
-
+            
 @client.event
 async def on_message(message):
     global last_message
