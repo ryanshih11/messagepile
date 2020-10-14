@@ -10,7 +10,7 @@ config_path = '/home/meet/Documents/Programming/python/messagepile/config.xml'
 last_message = ''
 
 #Project Team 11: Connor Perkins, Ryan Shih, Daniel Sinani, Samuel Harward
-#Languages included so far: Java, Python, C#, ... Feel free to edit
+#Languages included so far: Java, Python, C#, brainfuck, php, rust, go ... Feel free to edit
 #Features: Reading code, compiling, running code
 
 @client.event
